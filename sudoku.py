@@ -5,11 +5,14 @@ import pygame
 
 # Fix the size of the window that will be displayed to play the Sudoku game
 WINDOW_SIZE = (550, 550)
+CELL_SIZE = 50
+OFFSET = 5
 
 # Set up a background color for the window
-background_color = (250,250,250) # white-grey
-lines_color = (0,0,0) # black
-clues_color = (52, 31, 151) # blue
+BACKGROUND_COLOR = (250,250,250) # white-grey
+LINES_COLOR = (0,0,0) # black
+CLUES_COLOR = (52, 31, 151) # blue
+VALUES_COLOR = (0,0,0) # black
 
 
 # Populated grid (as an example until developing the sudoku generator module)
@@ -27,6 +30,59 @@ grid = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
 grid_original = [[grid[x][y] for y in range(len(grid[0]))] for x in range(len(grid))]
 
 
+# Function to insert values in the grid
+def insert_value(window, position):
+    # Y coordinate (position[1]) is the row and X coordinate (position[0]) is the column
+    row,column = position[1], position[0]
+    # Select a font for the values that the user writes on the grid
+    font = pygame.font.SysFont('Comic Sans MS', 32)
+
+    # Infinite loop to to detect user actions (quit the game, write on a cell, click on another cell)
+    while True:
+        for event in pygame.event.get():
+            # Quit the game (finish the program) whenever the user presses Sudoku game window QUIT button
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+            # There are three cases when the user presses a key
+            if event.type == pygame.KEYDOWN:
+                # (1) The user tries to edit a clue (values written (!= 0) on the original grid)
+                # This action is not allowed ('return')
+                if (grid_original[row-1][column-1] != 0):
+                    return
+
+                # (2) The user wants to clear the cell (erase the written value) they clicked on
+                if (event.key == ord('0')):
+                    # Store the (0) value in the grid
+                    grid[row-1][column-1] = chr(event.key)
+                    # Draw a blank cell
+                    pygame.draw.rect(window, BACKGROUND_COLOR, (position[0]*CELL_SIZE + OFFSET, position[1]*CELL_SIZE + OFFSET, CELL_SIZE - 2*OFFSET, CELL_SIZE - 2*OFFSET))
+
+                # (3) The user wants to add or edit a value on the grid
+                # This action is allowed if the value is valid (between 1 and 9)
+                if (ord('1') <= event.key <= ord('9')):
+                    # Store the value in the grid
+                    grid[row-1][column-1] = chr(event.key)
+                    # Store the written value to insert it on the cell
+                    value = font.render(str(chr(event.key)), True, VALUES_COLOR)
+                    # Draw a blank cell
+                    pygame.draw.rect(window, BACKGROUND_COLOR, (position[0]*CELL_SIZE + OFFSET, position[1]*CELL_SIZE + OFFSET, CELL_SIZE - 2*OFFSET, CELL_SIZE - 2*OFFSET))
+                    # Write the value on the cell
+                    window.blit(value, (position[0]*CELL_SIZE + 16, position[1]*CELL_SIZE+2))
+
+                pygame.display.update()
+                return
+
+            # The user could click on another cell before writing a value
+            # The position of the mouse should be updated
+            #(and the function to insert a value should be called again)
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                position = pygame.mouse.get_pos()
+                # Devide by the mouse position by the cell size to get the cell position
+                insert_value(window, (position[0]//CELL_SIZE, position[1]//CELL_SIZE))
+
+
 def main():
 
     # Initialize pygame
@@ -34,7 +90,7 @@ def main():
 
     # Display the window and fill it with the chosen background color
     window = pygame.display.set_mode(WINDOW_SIZE)
-    window.fill(background_color)
+    window.fill(BACKGROUND_COLOR)
 
     # Add a font for the numbers populating the sudoku grid
     font = pygame.font.SysFont('Times New Roman', 35)
@@ -45,16 +101,16 @@ def main():
             # Draw a black vertical line in the displayed window.
             # Third and fourth parameters are starting and ending coordinates respectively.
             # Fifth parameter is the width of the line
-            pygame.draw.line(window, lines_color, (50 + 50*i, 50), (50 + 50*i, 500), 2)
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 2)
 
             # Draw a horizontal line with the same format than the vertical one
-            pygame.draw.line(window, lines_color, (50, 50 + 50*i), (500, 50 + 50*i), 2)
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 2)
         # Every 3 lines (i % 3 == 0), the drawn linea should be in bold (width x2)
         # To differenciate the 3x3 grids and make the grid easier for the user (sudoku player)
         else:
             # Lines in bold
-            pygame.draw.line(window, lines_color, (50 + 50*i, 50), (50 + 50*i, 500), 4)
-            pygame.draw.line(window, lines_color, (50, 50 + 50*i), (500, 50 + 50*i), 4)
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 4)
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 4)
 
     # Update what is being displayed
     pygame.display.update()
@@ -64,16 +120,24 @@ def main():
         for column in range(len(grid[0])):
             # Check if the value is valid (between 1 and 9)
             if (1 <= grid[row][column] <= 9):
-                # If valid, write the value in the grid
-                clue = font.render(str(grid[row][column]), True, clues_color)
-                window.blit(clue, ((column+1)*50 + 17, (row+1)*50 + 6))
+                # If valid, write the value on the grid
+                clue = font.render(str(grid[row][column]), True, CLUES_COLOR)
+                window.blit(clue, ((column+1)*CELL_SIZE + 17, (row+1)*CELL_SIZE + 6))
 
     # Update what is being displayed
     pygame.display.update()
 
-    # Close the window whenever the user presses Sudoku game window QUIT button
+    # Infinite loop to detect user actions (click on a cell, quit the game)
     while True:
         for event in pygame.event.get():
+            # Get the position of the mouse when the user clicks on a cell (left click is button == 1)
+            # And call the insert_value function to insert the written value in the grid
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                position = pygame.mouse.get_pos()
+                # Devide by the mouse position by the cell size to get the cell position
+                insert_value(window, (position[0]//CELL_SIZE, position[1]//CELL_SIZE))
+
+            # Quit the game (finish the program) whenever the user presses Sudoku game window QUIT button
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
