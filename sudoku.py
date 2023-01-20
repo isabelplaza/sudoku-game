@@ -125,17 +125,46 @@ def check_corretness():
     # Call the function that performs the algorithm to check the correctness
     message_code = _check_correctness()
 
+    # Display a new window and fill it with the chosen background color
+    message_window = pygame.display.set_mode((WINDOW_SIZE[0], WINDOW_SIZE[1]//4))
+    message_window.fill(BACKGROUND_COLOR)
+
+    # Add a font for the text of the message)
+    font = pygame.font.SysFont('Times New Roman', 35)
+    text_color = (0,0,0) # black
+
     # The function returns a message code depending on the correctness of the solution:
     # (1) The solution is incomplete
     # (2) The solution is incorrect
     # (3) The solution is correct
     # Depending on this message code, the program displays the corresponding message
     if message_code == 1:
-        print('You have not finished yet!')
+        pygame.display.set_caption("Oops!")
+        text = font.render('You have not finished yet!', True, text_color)
+
     elif message_code == 2:
-        print('Try again!')
+        pygame.display.set_caption("Sorry")
+        text = font.render('Try again!', True, text_color)
     elif message_code == 3:
-        print('It is correct!')
+        pygame.display.set_caption("Congratulations")
+        text = font.render('It is correct!', True, text_color)
+
+    # Create a rectangular object for the text surface object
+    textRect = text.get_rect()
+    # Set the center of the rectangular object
+    textRect.center = (WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 4 // 2)
+    # Display the text on the message window
+    message_window.blit(text, textRect)
+
+    # Update what is being displayed
+    pygame.display.update()
+
+    # infinite loop
+    while True:
+        for event in pygame.event.get():
+            # Quit the game (finish the program) whenever the user presses Sudoku game window QUIT button
+            if event.type == pygame.QUIT:
+                return
 
 
 # Function that performs the algorithm to check if the user's puzzle solution is correct
@@ -241,6 +270,9 @@ def main():
                     # Devide the mouse position by the cell size to get the cell position
                     insert_value(window, button, (position[0]//CELL_SIZE, position[1]//CELL_SIZE))
 
+                # Display the game window again (just in case the function check_corretness was called)
+                window = display_game_window_again()
+
             # Quit the game (finish the program) whenever the user presses Sudoku game window QUIT button
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -260,6 +292,70 @@ def main():
 
         # Update what is being displayed
         pygame.display.update()
+
+
+def display_game_window_again():
+    # Display again the game window
+    # Display the window (with 'Sudoku Game' caption) and fill it with the chosen background color
+    window = pygame.display.set_mode(WINDOW_SIZE)
+    pygame.display.set_caption("Sudoku Game")
+    window.fill(BACKGROUND_COLOR)
+
+    # Add a font for the numbers populating the sudoku grid (and for the text of the button)
+    font = pygame.font.SysFont('Times New Roman', 35)
+
+    # Add a font and color for the values the user inserted before
+    font_values = pygame.font.SysFont('Comic Sans MS', 32)
+
+    # Draw the grid (9x9) --> 'for' from 0 to 9.
+    for i in range(10):
+        if (i % 3 != 0):
+            # Draw a black vertical line in the displayed window.
+            # Third and fourth parameters are starting and ending coordinates respectively.
+            # Fifth parameter is the width of the line
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 2)
+
+            # Draw a horizontal line with the same format than the vertical one
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 2)
+        # Every 3 lines (i % 3 == 0), the drawn lines should be in bold (width x2)
+        # To differenciate the 3x3 grids and make the grid easier for the user (sudoku player)
+        else:
+            # Lines in bold
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 4)
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 4)
+
+    # Populate the displayed grid
+    for row in range(len(grid)):
+        for column in range(len(grid[0])):
+            # Check if the cell vlaue is a clue or a value the user inserted
+            if (1 <= int(grid[row][column]) <= 9) and grid[row][column] == grid_original[row][column]:
+                # If the value is only in the original grid, then it is a clue.
+                # Write the clue on the grid
+                clue = font.render(str(grid_original[row][column]), True, CLUES_COLOR)
+                window.blit(clue, ((column+1)*CELL_SIZE + 17, (row+1)*CELL_SIZE + 6))
+            elif (1 <= int(grid[row][column]) <= 9) and grid[row][column] != grid_original[row][column]:
+                # Else, the value is actually a value
+                # Write the value on the grid
+                value = font_values.render(str(grid[row][column]), True, VALUES_COLOR)
+                window.blit(value, ((column+1)*CELL_SIZE + 16, (row+1)*CELL_SIZE+2))
+
+    # Set up features of a button (the button will allow the user to check the correctness of their solution)
+    color_button = (0,177,26) # green
+    color_hover_button = (1,142,21) # darker green
+    color_text_button = (255,255,255) #white
+    button_size = (WINDOW_SIZE[0]//3, WINDOW_SIZE[1]//10)
+    button_position = (WINDOW_SIZE[0]//3, 5*WINDOW_SIZE[1]//6)
+    text_button = font.render('Check', True, color_text_button) # the text on the button will be 'Check'
+
+    # Create the button that allows the user to check the correctness of their solution
+    button = pygame.Rect(button_position[0], button_position[1], button_size[0], button_size[1])
+    pygame.draw.rect(window, color_button, button)
+    window.blit(text_button, (button.x + 9*OFFSET, button.y + 2*OFFSET))
+
+    # Update what is being displayed
+    pygame.display.update()
+
+    return window
 
 
 main()
