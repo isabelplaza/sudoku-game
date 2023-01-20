@@ -2,6 +2,7 @@
 
 # Set up pygame
 import pygame
+from collections import defaultdict
 
 # Fix the size of the window that will be displayed to play the Sudoku game
 WINDOW_SIZE = (550, 650)
@@ -25,6 +26,28 @@ grid = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
         [0, 7, 0, 3, 0, 0, 0, 1, 2],
         [1, 2, 0, 0, 0, 7, 4, 0, 0],
         [0, 4, 9, 2, 0, 6, 0, 0, 7]]
+
+# Solved grid: to edit to make tests
+#grid = [[7, 8, 5, 4, 3, 9, 1, 2, 6],
+#        [6, 1, 2, 8, 7, 5, 3, 4, 9],
+#        [4, 9, 3, 6, 2, 1, 5, 7, 8],
+#        [8, 5, 7, 9, 4, 3, 2, 6, 1],
+#        [2, 6, 1, 7, 5, 8, 9, 3, 4],
+#        [9, 3, 4, 1, 6, 2, 7, 8, 5],
+#        [5, 7, 8, 3, 9, 4, 6, 1, 2],
+#        [1, 2, 6, 5, 8, 7, 4, 9, 3],
+#        [3, 4, 9, 2, 1, 6, 8, 5, 7]]
+
+# Solved grid: to keep as a reference when editing the solved grid above
+#grid = [[7, 8, 5, 4, 3, 9, 1, 2, 6],
+#        [6, 1, 2, 8, 7, 5, 3, 4, 9],
+#        [4, 9, 3, 6, 2, 1, 5, 7, 8],
+#        [8, 5, 7, 9, 4, 3, 2, 6, 1],
+#        [2, 6, 1, 7, 5, 8, 9, 3, 4],
+#        [9, 3, 4, 1, 6, 2, 7, 8, 5],
+#        [5, 7, 8, 3, 9, 4, 6, 1, 2],
+#        [1, 2, 6, 5, 8, 7, 4, 9, 3],
+#        [3, 4, 9, 2, 1, 6, 8, 5, 7]]
 
 # Copy the grid for later comparison
 grid_original = [[grid[x][y] for y in range(len(grid[0]))] for x in range(len(grid))]
@@ -94,9 +117,56 @@ def insert_value(window, button, position):
 
 
 # Function to check if the user's solution for the sudoku puzzle is correct
-# (No actual functionality yet)
+# A sudoku solution is valid if it follows the following three rules:
+# (1) Each row must contain the digits from 1-9 without repetition.
+# (2) Each column must contain the digits from 1-9 without repetition.
+# (3) Each of the 9 (3x3) sub-boxes of the grid must contain the digits from 1-9 without repetition.
 def check_corretness():
-    print('It is correct!')
+    # Call the function that performs the algorithm to check the correctness
+    message_code = _check_correctness()
+
+    # The function returns a message code depending on the correctness of the solution:
+    # (1) The solution is incomplete
+    # (2) The solution is incorrect
+    # (3) The solution is correct
+    # Depending on this message code, the program displays the corresponding message
+    if message_code == 1:
+        print('You have not finished yet!')
+    elif message_code == 2:
+        print('Try again!')
+    elif message_code == 3:
+        print('It is correct!')
+
+
+# Function that performs the algorithm to check if the user's puzzle solution is correct
+def _check_correctness():
+    # Create dictionaries to store the values in each row, column and block (3x3 grid)
+    row_values = defaultdict(set)
+    column_values = defaultdict(set)
+    block_values = defaultdict(set)
+
+    # Initialize the message code to correct solution ('3')
+    message_code = 3
+
+    # Check every cell on the grid
+    for row in range(len(grid)):
+        for column in range(len(grid[0])):
+            # If the cell is empty (value = 0), the puzzle is incomplete (message_code = 1)
+            if grid[row][column] == 0:
+                message_code = 1
+                return message_code
+            # If the value in the cell has already appear for its row, column or block, the puzzle is incorrect (message_code = 2)
+            elif grid[row][column] in row_values[row] or grid[row][column] in column_values[column] or grid[row][column] in block_values[(row//3,column//3)]:
+                message_code = 2
+                return message_code
+            # Add every value to each dictionary
+            block_values[(row//3,column//3)].add(grid[row][column])
+            row_values[row].add(grid[row][column])
+            column_values[column].add(grid[row][column])
+
+    # If all the values are correct, then the puzzle is correct (message_code = 3)
+    return message_code
+
 
 # Main function
 def main():
@@ -166,12 +236,10 @@ def main():
                 if button.collidepoint(position):
                     # Call the button's function to check the correctness of the user's puzzle solution
                     check_corretness()
-                    return
                 # If the mouse position is anywhere else, call insert_value again
                 else:
                     # Devide the mouse position by the cell size to get the cell position
                     insert_value(window, button, (position[0]//CELL_SIZE, position[1]//CELL_SIZE))
-                    return
 
             # Quit the game (finish the program) whenever the user presses Sudoku game window QUIT button
             if event.type == pygame.QUIT:
