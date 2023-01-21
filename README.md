@@ -65,3 +65,6 @@ Here are some example test cases for the Sudoku game.
   - **Insert a 1 or a 9 in a cell**: Click on a cell and insert a 1 or a 9. The cell should show the written value.
 * Usability test cases
   - **Try to play a game**: Try to solve the Sudoku puzzle using the given clues. Check if the solution is correct when finish.
+
+## Conclusion
+This programming project was a nice hands-on experience to practice with the Python programming lenguage, and to learn some basics of the Pygame library and what it can provide. 
