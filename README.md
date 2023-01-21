@@ -50,3 +50,18 @@ python3 sudoku.py
 The User Interface of the game is greatly intuitive. The game window shows the Sudoku grid and a button. The clues in the grid are written in blue Times New Roman. When the user fills in a cell, the value is written in black Comics Sans MS. The button says 'Check' and gets darker when the mouse hovers over it, to show the user that it can be clicked on.
 
 When the user clicks on the 'Check' button, a new window is displayed with a message to tell the user if theis solution to the puzzle is correct, incorrect or incomplete. The user cannot interact with this window, it is just a message window. When the user closes this message window, the game window is displayed again and the game keeps going.
+
+## Test Cases
+Here are some example test cases for the Sudoku game.
+* Positive and Functional test cases
+  - **Insert a value**: Click on a cell and insert a value from 1 to 9. The cell should show the value that the user inserted.
+  - **Delete a value**: Click on a filled in cell (not a clue cell) and press the '0' key. The cell should get empty.
+  - **Insert a value in a different cell that was previously clicked on**: Click on a cell, click on another different cell and write a value. The latest clicked on cell should show the written value.
+  - **Check the correctness of the solution**: Click on the button at any moment of the game and check that the displayed message is correct. (a) 'You have not finished yet!' when the Sudoku puzzle is unfinished. (b) 'Try again!' when the Sudoku puzzle is solved incorrectly. (c) 'It is correct!' when the Sudoku puzzle is solved correctly.
+* Negative test cases
+  - **Insert a random character**: Click on a cell and press any key on the keyboard different than numbers from 0 to 9. The cell should stay invariable.
+  - **Insert a value outside the grid**: Click on any place outside the grid and insert any key on the keyboard. The space of the game window that was clicked on should stay invariable.
+* Boundary test cases
+  - **Insert a 1 or a 9 in a cell**: Click on a cell and insert a 1 or a 9. The cell should show the written value.
+* Usability test cases
+  - **Try to play a game**: Try to solve the Sudoku puzzle using the given clues. Check if the solution is correct when finish.
