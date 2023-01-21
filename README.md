@@ -38,12 +38,12 @@ cd sudoku-game
 python3 sudoku.py
 ```
 5. Play the Sudoku game
-  1. Click on the cell you want to fill in and press a key on your keyboard
-    1. Press the number (from 1 to 9) you want to insert in the cell
-    2. Press the number '0' if you want to delete a value you inserted previously in the cell
-  2. Click on the button whenever you want to check if your solution is correct
-    1. A new window will be displayed to tell you if (a) your solution is incomplete, (b) your solution is incorrect, or (c) your solution is correct
-  3. Close this window to go back to the game window
-  4. Close the game window whenever you want to quit the game.
+      1. Click on the cell you want to fill in and press a key on your keyboard
+            * Press the number (from 1 to 9) you want to insert in the cell
+            * Press the number '0' if you want to delete a value you inserted previously in the cell
+      2. Click on the button whenever you want to check if your solution is correct
+            * A new window will be displayed to tell you if (a) your solution is incomplete, (b) your solution is incorrect, or (c) your solution is correct
+      4. Close this window to go back to the game window
+      5. Close the game window whenever you want to quit the game.
   
  
