@@ -127,12 +127,12 @@ def insert_value(window, button, position):
                 if button.collidepoint(position):
                     # Call the button's function to check the correctness of the user's puzzle solution
                     check_corretness()
-                    return
-                # If the mouse position is anywhere else, call insert_value again
-                else:
+                # If the mouse position is in the grid, call insert_value again
+                elif (CELL_SIZE < position[0] < 10*CELL_SIZE) and (CELL_SIZE < position[1] < 10*CELL_SIZE):
                     # Devide the mouse position by the cell size to get the cell position
                     insert_value(window, button, (position[0]//CELL_SIZE, position[1]//CELL_SIZE))
-                    return
+
+                return
 
 
 # Function to check if the user's solution for the sudoku puzzle is correct
@@ -465,7 +465,7 @@ def main():
                     # Call the button's function to check the correctness of the user's puzzle solution
                     check_corretness()
                 # If the mouse position is anywhere else, call insert_value again
-                else:
+                elif (CELL_SIZE < position[0] < 10*CELL_SIZE) and (CELL_SIZE < position[1] < 10*CELL_SIZE):
                     # Devide the mouse position by the cell size to get the cell position
                     insert_value(window, button, (position[0]//CELL_SIZE, position[1]//CELL_SIZE))
 
