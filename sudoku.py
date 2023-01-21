@@ -3,6 +3,7 @@
 # Set up pygame
 import pygame
 from collections import defaultdict
+from random import randint, shuffle
 
 # Fix the size of the window that will be displayed to play the Sudoku game
 WINDOW_SIZE = (550, 650)
@@ -16,16 +17,16 @@ CLUES_COLOR = (52, 31, 151) # blue
 VALUES_COLOR = (0,0,0) # black
 
 
-# Populated grid (as an example until developing the sudoku generator module)
-grid = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
-        [6, 0, 0, 0, 7, 5, 0, 0, 9],
-        [0, 0, 0, 6, 0, 1, 0, 7, 8],
-        [0, 0, 7, 0, 4, 0, 2, 6, 0],
-        [0, 0, 1, 0, 5, 0, 9, 3, 0],
-        [9, 0, 4, 0, 6, 0, 0, 0, 5],
-        [0, 7, 0, 3, 0, 0, 0, 1, 2],
-        [1, 2, 0, 0, 0, 7, 4, 0, 0],
-        [0, 4, 9, 2, 0, 6, 0, 0, 7]]
+# Populated grid (as an example to perform tests)
+#grid = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
+#        [6, 0, 0, 0, 7, 5, 0, 0, 9],
+#        [0, 0, 0, 6, 0, 1, 0, 7, 8],
+#        [0, 0, 7, 0, 4, 0, 2, 6, 0],
+#        [0, 0, 1, 0, 5, 0, 9, 3, 0],
+#        [9, 0, 4, 0, 6, 0, 0, 0, 5],
+#        [0, 7, 0, 3, 0, 0, 0, 1, 2],
+#        [1, 2, 0, 0, 0, 7, 4, 0, 0],
+#        [0, 4, 9, 2, 0, 6, 0, 0, 7]]
 
 # Solved grid: to edit to make tests
 #grid = [[7, 8, 5, 4, 3, 9, 1, 2, 6],
@@ -50,7 +51,25 @@ grid = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
 #        [3, 4, 9, 2, 1, 6, 8, 5, 7]]
 
 # Copy the grid for later comparison
-grid_original = [[grid[x][y] for y in range(len(grid[0]))] for x in range(len(grid))]
+#grid_original = [[grid[x][y] for y in range(len(grid[0]))] for x in range(len(grid))]
+
+
+
+
+# Initialize an empty 9x9 grid
+grid = []
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+# Set up a list with all the possible numbers a Sudoku cell could take as a clue
+numberList=[1,2,3,4,5,6,7,8,9]
 
 
 # Function to insert values in the grid
@@ -197,6 +216,186 @@ def _check_correctness():
     return message_code
 
 
+# Function to check if the grid is full
+def grid_is_full():
+  for row in range(len(grid)):
+      for column in range(len(grid)):
+        if grid[row][column] == 0:
+          return False
+  return True
+
+
+# Backtracking/recursive function to generate a full sudoku grid
+def fill_grid(grid):
+    global counter
+    # Find next empty cell
+    for i in range(0,81):
+        row = i//9
+        column = i%9
+        # If the cell is empty, try to fill it with a valid value
+        if grid[row][column] == 0:
+            shuffle(numberList)
+            for value in numberList:
+                # Check that this value has not already been used on this row
+                if not value in grid[row]:
+                    # Check that this value has not already been used on this column
+                    if not value in (grid[0][column],grid[1][column],grid[2][column],grid[3][column],grid[4][column],grid[5][column],grid[6][column],grid[7][column],grid[8][column]):
+                        # Identify in which of the 9 blocks (3x3 grid) the cell is
+                        block = []
+                        if row < 3:
+                            if column < 3:
+                                block = [grid[i][0:3] for i in range(0,3)]
+                            elif column < 6:
+                                block = [grid[i][3:6] for i in range(0,3)]
+                            else:
+                                block = [grid[i][6:9] for i in range(0,3)]
+
+                        elif row < 6:
+                            if column < 3:
+                                block = [grid[i][0:3] for i in range(3,6)]
+                            elif column < 6:
+                                block = [grid[i][3:6] for i in range(3,6)]
+                            else:
+                                block = [grid[i][6:9] for i in range(3,6)]
+
+                        else:
+                            if column < 3:
+                                block = [grid[i][0:3] for i in range(6,9)]
+                            elif column < 6:
+                                block = [grid[i][3:6] for i in range(6,9)]
+                            else:
+                                block = [grid[i][6:9] for i in range(6,9)]
+
+                        # Check that this value has not already been used on this 3x3 block
+                        if not value in (block[0] + block[1] + block[2]):
+                            grid[row][column] = value
+                            if grid_is_full():
+                                return True
+                            else:
+                                if fill_grid(grid):
+                                    return True
+            break
+    grid[row][column] = 0
+
+
+# Backtracking/recursive function to solve a sudoku puzzle
+def solve_grid(grid):
+    global counter
+    # Find next empty cell
+    for i in range(0,81):
+        row = i//9
+        column = i%9
+        # If the cell is empty, try to fill it with a valid value
+        if grid[row][column] == 0:
+            for value in range (1,10):
+                # Check that this value has not already been used on this row
+                if not value in grid[row]:
+                    # Check that this value has not already been used on this column
+                    if not value in (grid[0][column],grid[1][column],grid[2][column],grid[3][column],grid[4][column],grid[5][column],grid[6][column],grid[7][column],grid[8][column]):
+                        # Identify in which of the 9 blocks (3x3 grid) the cell is
+                        block = []
+                        if row < 3:
+                            if column < 3:
+                                block = [grid[i][0:3] for i in range(0,3)]
+                            elif column < 6:
+                                block = [grid[i][3:6] for i in range(0,3)]
+                            else:
+                                block = [grid[i][6:9] for i in range(0,3)]
+
+                        elif row < 6:
+                            if column < 3:
+                                block = [grid[i][0:3] for i in range(3,6)]
+                            elif column < 6:
+                                block = [grid[i][3:6] for i in range(3,6)]
+                            else:
+                                block = [grid[i][6:9] for i in range(3,6)]
+
+                        else:
+                            if column < 3:
+                                block = [grid[i][0:3] for i in range(6,9)]
+                            elif column < 6:
+                                block = [grid[i][3:6] for i in range(6,9)]
+                            else:
+                                block = [grid[i][6:9] for i in range(6,9)]
+
+                        # Check that this value has not already been used on this 3x3 block
+                        if not value in (block[0] + block[1] + block[2]):
+                            grid[row][column] = value
+                            if grid_is_full():
+                                counter+=1
+                                break
+                            else:
+                                if solve_grid(grid):
+                                    return True
+            break
+    grid[row][column] = 0
+
+
+# Function to display the game window again (after displaying the correctness window)
+def display_game_window_again():
+    # Display again the game window
+    # Display the window (with 'Sudoku Game' caption) and fill it with the chosen background color
+    window = pygame.display.set_mode(WINDOW_SIZE)
+    pygame.display.set_caption("Sudoku Game")
+    window.fill(BACKGROUND_COLOR)
+
+    # Add a font for the numbers populating the sudoku grid (and for the text of the button)
+    font = pygame.font.SysFont('Times New Roman', 35)
+
+    # Add a font for the values the user inserted before
+    font_values = pygame.font.SysFont('Comic Sans MS', 32)
+
+    # Draw the grid (9x9) --> 'for' from 0 to 9.
+    for i in range(10):
+        if (i % 3 != 0):
+            # Draw a black vertical line in the displayed window.
+            # Third and fourth parameters are starting and ending coordinates respectively.
+            # Fifth parameter is the width of the line
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 2)
+
+            # Draw a horizontal line with the same format than the vertical one
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 2)
+        # Every 3 lines (i % 3 == 0), the drawn lines should be in bold (width x2)
+        # To differenciate the 3x3 grids and make the grid easier for the user (sudoku player)
+        else:
+            # Lines in bold
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 4)
+            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 4)
+
+    # Populate the displayed grid
+    for row in range(len(grid)):
+        for column in range(len(grid[0])):
+            # Check if the cell vlaue is a clue or a value the user inserted
+            if (1 <= int(grid[row][column]) <= 9) and grid[row][column] == grid_original[row][column]:
+                # If the value is only in the original grid, then it is a clue.
+                # Write the clue on the grid
+                clue = font.render(str(grid_original[row][column]), True, CLUES_COLOR)
+                window.blit(clue, ((column+1)*CELL_SIZE + 17, (row+1)*CELL_SIZE + 6))
+            elif (1 <= int(grid[row][column]) <= 9) and grid[row][column] != grid_original[row][column]:
+                # Else, the value is actually a value
+                # Write the value on the grid
+                value = font_values.render(str(grid[row][column]), True, VALUES_COLOR)
+                window.blit(value, ((column+1)*CELL_SIZE + 16, (row+1)*CELL_SIZE+2))
+
+    # Set up features of a button (the button will allow the user to check the correctness of their solution)
+    color_button = (0,177,26) # green
+    color_hover_button = (1,142,21) # darker green
+    color_text_button = (255,255,255) #white
+    button_size = (WINDOW_SIZE[0]//3, WINDOW_SIZE[1]//10)
+    button_position = (WINDOW_SIZE[0]//3, 5*WINDOW_SIZE[1]//6)
+    text_button = font.render('Check', True, color_text_button) # the text on the button will be 'Check'
+
+    # Create the button that allows the user to check the correctness of their solution
+    button = pygame.Rect(button_position[0], button_position[1], button_size[0], button_size[1])
+    pygame.draw.rect(window, color_button, button)
+    window.blit(text_button, (button.x + 9*OFFSET, button.y + 2*OFFSET))
+
+    # Update what is being displayed
+    pygame.display.update()
+
+    return window
+
+
 # Main function
 def main():
 
@@ -294,68 +493,49 @@ def main():
         pygame.display.update()
 
 
-def display_game_window_again():
-    # Display again the game window
-    # Display the window (with 'Sudoku Game' caption) and fill it with the chosen background color
-    window = pygame.display.set_mode(WINDOW_SIZE)
-    pygame.display.set_caption("Sudoku Game")
-    window.fill(BACKGROUND_COLOR)
-
-    # Add a font for the numbers populating the sudoku grid (and for the text of the button)
-    font = pygame.font.SysFont('Times New Roman', 35)
-
-    # Add a font and color for the values the user inserted before
-    font_values = pygame.font.SysFont('Comic Sans MS', 32)
-
-    # Draw the grid (9x9) --> 'for' from 0 to 9.
-    for i in range(10):
-        if (i % 3 != 0):
-            # Draw a black vertical line in the displayed window.
-            # Third and fourth parameters are starting and ending coordinates respectively.
-            # Fifth parameter is the width of the line
-            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 2)
-
-            # Draw a horizontal line with the same format than the vertical one
-            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 2)
-        # Every 3 lines (i % 3 == 0), the drawn lines should be in bold (width x2)
-        # To differenciate the 3x3 grids and make the grid easier for the user (sudoku player)
-        else:
-            # Lines in bold
-            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE + CELL_SIZE*i, CELL_SIZE), (CELL_SIZE + CELL_SIZE*i, 10*CELL_SIZE), 4)
-            pygame.draw.line(window, LINES_COLOR, (CELL_SIZE, CELL_SIZE + CELL_SIZE*i), (10*CELL_SIZE, CELL_SIZE + CELL_SIZE*i), 4)
-
-    # Populate the displayed grid
-    for row in range(len(grid)):
-        for column in range(len(grid[0])):
-            # Check if the cell vlaue is a clue or a value the user inserted
-            if (1 <= int(grid[row][column]) <= 9) and grid[row][column] == grid_original[row][column]:
-                # If the value is only in the original grid, then it is a clue.
-                # Write the clue on the grid
-                clue = font.render(str(grid_original[row][column]), True, CLUES_COLOR)
-                window.blit(clue, ((column+1)*CELL_SIZE + 17, (row+1)*CELL_SIZE + 6))
-            elif (1 <= int(grid[row][column]) <= 9) and grid[row][column] != grid_original[row][column]:
-                # Else, the value is actually a value
-                # Write the value on the grid
-                value = font_values.render(str(grid[row][column]), True, VALUES_COLOR)
-                window.blit(value, ((column+1)*CELL_SIZE + 16, (row+1)*CELL_SIZE+2))
-
-    # Set up features of a button (the button will allow the user to check the correctness of their solution)
-    color_button = (0,177,26) # green
-    color_hover_button = (1,142,21) # darker green
-    color_text_button = (255,255,255) #white
-    button_size = (WINDOW_SIZE[0]//3, WINDOW_SIZE[1]//10)
-    button_position = (WINDOW_SIZE[0]//3, 5*WINDOW_SIZE[1]//6)
-    text_button = font.render('Check', True, color_text_button) # the text on the button will be 'Check'
-
-    # Create the button that allows the user to check the correctness of their solution
-    button = pygame.Rect(button_position[0], button_position[1], button_size[0], button_size[1])
-    pygame.draw.rect(window, color_button, button)
-    window.blit(text_button, (button.x + 9*OFFSET, button.y + 2*OFFSET))
-
-    # Update what is being displayed
-    pygame.display.update()
-
-    return window
 
 
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+
+
+# Generate a full sudoku 9x9 grid
+fill_grid(grid)
+
+
+# Remove numbers from the full grid to set up the Sudoku puzzle for the user
+# Mind that a higher number of attempts will end up removing more numbers from the grid
+# Potentially resulting in a more difficult puzzle
+attempts = 5
+while attempts > 0:
+  # Select a random cell that is not already empty
+  row = randint(0,8)
+  col = randint(0,8)
+  while grid[row][col] == 0:
+    row = randint(0,8)
+    col = randint(0,8)
+
+  # Remember the cell value before removing it in case that the resulting puzzle have no solution
+  backup = grid[row][col]
+  # Clear the cell
+  grid[row][col] = 0
+
+  # Count the number of solutions that this grid has (using a backtracking approach implemented in the solve_grid() function)
+  counter = 0
+  solve_grid(grid)
+
+  # If the number of solution is different from 1 (either higher than one or equals 0)
+  # Then we need to cancel the change by putting the value we took away back in the grid
+  if counter != 1:
+    grid[row][col] = backup
+    # Make another attempt with a different cell just to try to remove more numbers
+    attempts -= 1
+
+
+# Copy the grid for later comparison
+grid_original = [[grid[x][y] for y in range(len(grid[0]))] for x in range(len(grid))]
+
+# Call the main function to allow the user to start playing
 main()
