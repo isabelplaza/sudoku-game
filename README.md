@@ -66,5 +66,14 @@ Here are some example test cases for the Sudoku game.
 * Usability test cases
   - **Try to play a game**: Try to solve the Sudoku puzzle using the given clues. Check if the solution is correct when finish.
 
+## Issues faced
+One of the issues that has been faced during the development of this project is trying to display two different windows during same game. The Pygame library does not save the features of a window when a new one is displayed. Thus, a solution has been necessary to allow the user to keep going with their game after checking the correctness of their solution.
+
+The problem has been solved storing the game data in global variables and calling a function that displays a new game window (that looks the same than the original game window) when the quit button is clicked on the message window.
+
+Another issue has been making the button intuitive to the user. To do so, hover effects have been added to the rectangle that represents the button.
+
+The last and greatest challenge has been generating the sudoku puzzle itself. On the one hand, the Sudoku puzzle must be solvable and have a unique solution. Thereby, it is not enough to add random clues to the grid. The approach that has been followed in this project is creating an entire full Sudoku grid and then remove some values from it. On the other hand, the generation of the puzzle must be efficient. In this particular case, a backtracking algorithm has been suitable enough.
+
 ## Conclusion
 This programming project was a nice hands-on experience to practice with the Python programming lenguage, and to learn some basics of the Pygame library and what it can provide. 
