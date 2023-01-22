@@ -70,9 +70,7 @@ Here are some example test cases for the Sudoku game.
   - **Try to play a game**: Try to solve the Sudoku puzzle using the given clues. Check if the solution is correct when finish.
 
 ## Issues faced
-One of the issues that has been faced during the development of this project is trying to display two different windows during same game. The Pygame library does not save the features of a window when a new one is displayed. Thus, a solution has been necessary to allow the user to keep going with their game after checking the correctness of their solution.
-
-The problem has been solved storing the game data in global variables and calling a function that displays a new game window (that looks the same than the original game window) when the quit button is clicked on the message window.
+One of the issues that has been faced during the development of this project is trying to display two different windows during same game. The Pygame library does not save the features of a window when a new one is displayed. Thus, a solution has been necessary to allow the user to keep going with their game after checking the correctness of their solution. The problem has been solved storing the game data in global variables and calling a function that displays a new game window (that looks the same than the original game window) when the quit button is clicked on the message window.
 
 Another issue has been making the button intuitive to the user. To do so, hover effects have been added to the rectangle that represents the button.
 
