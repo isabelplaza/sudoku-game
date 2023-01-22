@@ -58,9 +58,12 @@ Here are some example test cases for the Sudoku game.
   - **Delete a value**: Click on a filled in cell (not a clue cell) and press the '0' key. The cell should get empty.
   - **Insert a value in a different cell that was previously clicked on**: Click on a cell, click on another different cell and write a value. The latest clicked on cell should show the written value.
   - **Check the correctness of the solution**: Click on the button at any moment of the game and check that the displayed message is correct. (a) 'You have not finished yet!' when the Sudoku puzzle is unfinished. (b) 'Try again!' when the Sudoku puzzle is solved incorrectly. (c) 'It is correct!' when the Sudoku puzzle is solved correctly.
+  - **Quit the message window and go back to the game window**: Click on the message window quit button and verify that the window closes correctly and the game window is displayed again looking exactly the same than when you clicked on the 'Check' button.
+  - **Quit the game**: Click on the game window quit button and verify that the game finishes correctly.
 * Negative test cases
   - **Insert a random character**: Click on a cell and press any key on the keyboard different than numbers from 0 to 9. The cell should stay invariable.
-  - **Insert a value outside the grid**: Click on any place outside the grid and insert any key on the keyboard. The space of the game window that was clicked on should stay invariable.
+  - **Insert a value outside the grid**: Click on any place outside the grid and press any character on the keyboard. The space of the game window that was clicked on should stay invariable.
+  - **Insert a value in a clue cell**: Click on a clue cell and try to insert any character. The clue cell should stay invariable, since its value is a clue for the puzzle.
 * Boundary test cases
   - **Insert a 1 or a 9 in a cell**: Click on a cell and insert a 1 or a 9. The cell should show the written value.
 * Usability test cases
