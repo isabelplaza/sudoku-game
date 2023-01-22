@@ -49,7 +49,7 @@ python3 sudoku.py
 ## User Interface
 The User Interface of the game is greatly intuitive. The game window shows the Sudoku grid and a button. The clues in the grid are written in blue Times New Roman. When the user fills in a cell, the value is written in black Comics Sans MS. The button says 'Check' and gets darker when the mouse hovers over it, to show the user that it can be clicked on.
 
-When the user clicks on the 'Check' button, a new window is displayed with a message to tell the user if theis solution to the puzzle is correct, incorrect or incomplete. The user cannot interact with this window, it is just a message window. When the user closes this message window, the game window is displayed again and the game keeps going.
+When the user clicks on the 'Check' button, a new window is displayed with a message to tell them if their solution to the puzzle is correct, incorrect or incomplete. The user cannot interact with this window; it is just a message window. When the user closes this message window, the game window is displayed again and the game keeps going.
 
 ## Test Cases
 Here are some example test cases for the Sudoku game.
